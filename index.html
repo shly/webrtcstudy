@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>GetUserMedia实例</title>
+</head>
+
+<body>
+  <video id="video" autoplay></video>
+  <img src="">
+  <canvas style="display:none;" width="500" height="500"></canvas>
+  <button class="capture">截图</button>
+</body>
+
+<script type="text/javascript">
+  var context = new AudioContext();
+  var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+  var option = {
+    video: {
+      mandatory: {
+        minWidth: 100,
+        minHeight: 100
+      }
+    },
+    audio: true
+  }
+  getUserMedia.call(navigator, option, successCallback, errorCallback);
+  function successCallback(localMediaStream) {
+   
+    // var microphone = context.createMediaStreamSource(localMediaStream)
+    // var filter = context.createBiquadFilter()
+    // microphone.connect(filter)
+    // filter.connect(context.destination)
+    var video = document.querySelector('#video');
+    video.src = window.URL.createObjectURL(localMediaStream);
+    video.onloadedmetadata = function (e) {
+      console.log("Label: " + localMediaStream.label);
+      console.log("AudioTracks", localMediaStream.getAudioTracks());
+      console.log("VideoTracks", localMediaStream.getVideoTracks());
+      document.querySelector('.capture').onclick = snapshot(localMediaStream)
+    };
+  }
+  function errorCallback(e) {
+    console.log(e)
+  }
+  function snapshot(localMediaStream) {
+    return function () {
+      if (localMediaStream) {
+        var canvas = document.querySelector('canvas')
+        var ctx = canvas.getContext('2d')
+        ctx.drawImage(video, 0, 0);
+        // "image/webp" works in Chrome.
+        // Other browsers will fall back to image/png.
+        document.querySelector('img').src = canvas.toDataURL('image/png');
+        var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+        // window.location.href = image; // it will save locally  
+      }
+    }
+  }
+</script>
+
+
+</html>

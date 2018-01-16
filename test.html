@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>GetUserMedia实例</title>
+</head>
+<body>
+    <video id="video" autoplay></video>
+</body>
+
+<script src="modernizr.custom.54757.js"></script>
+<script type="text/javascript">
+  var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+  var option = {
+    video: {
+    mandatory: {
+      minWidth: 1280,
+      minHeight: 720
+    }
+  },
+    audio: true
+  }
+  getUserMedia.call(navigator, video,successCallback, errorCallback);
+  function successCallback (localMediaStream) {
+    var video = document.querySelect('#video');
+    video.src = window.URL.createObjectURL(localMediaStream);
+    video.onloadedmetadata = function(e) {
+        console.log("Label: " + localMediaStream.label);
+        console.log("AudioTracks" , localMediaStream.getAudioTracks());
+        console.log("VideoTracks" , localMediaStream.getVideoTracks());
+    };
+  }
+  function errorCallback (e) {
+    console.log(e)
+  }
+</script>
+
+
+</html>
